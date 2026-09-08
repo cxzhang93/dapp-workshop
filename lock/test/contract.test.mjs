@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {parseEther} from 'ethers';import {createProject} from '../project.mjs';
+test('Lock behavior',async t=>{const p=await createProject();t.after(()=>p.chain.close());
+ await t.test('deposit uses exact wei precision',async()=>{await p.action({action:'reset',amount:'1.000000000000000001'});assert.equal(await p.chain.balance(await p.contract.getAddress()),1000000000000000001n)});
+ await t.test('early owner withdrawal reverts',()=>assert.rejects(()=>p.contract.withdraw.staticCall(),/withdraw yet/));
+ await t.test('non-owner unlock reverts',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[1]).unlock.staticCall(),/owner/));
+ await t.test('owner override allows early withdrawal',async()=>{await p.action({action:'unlock'});await p.action({action:'withdraw'});assert.equal(await p.chain.balance(await p.contract.getAddress()),0n);assert.equal(p.chain.receipt.status,1)});
+ await t.test('normal deadline withdrawal succeeds',async()=>{await p.action({action:'reset'});await p.action({action:'advance'});await assert.rejects(()=>p.contract.connect(p.chain.signers[1]).withdraw.staticCall(),/owner/);await p.action({action:'withdraw'});assert.equal(await p.chain.balance(await p.contract.getAddress()),0n)});
+ await t.test('deployment refreshes an idle chain clock',async()=>{await p.chain.rpc.request({method:'evm_increaseTime',params:[3600]});await p.action({action:'reset',duration:600});assert.ok(Number(await p.contract.unlockTime())>await p.chain.timestamp())});
+ await t.test('invalid amount and duration rejected',async()=>{await assert.rejects(()=>p.action({action:'reset',amount:'0'}));await assert.rejects(()=>p.action({action:'reset',duration:'-1'}))});
+});

@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createProject} from '../project.mjs';import {serve} from '../runtime.mjs';
+test('HTTP interface',async t=>{const project=await createProject();const app=await serve(project,0);t.after(()=>app.close());const url=`http://127.0.0.1:${app.server.address().port}`;
+ await t.test('HTML and live state load',async()=>{assert.match(await(await fetch(url)).text(),/Live contract state/);const state=await(await fetch(url+'/api/state')).json();assert.equal(state.meta.slug,project.meta.slug);assert.match(state.address,/^0x[0-9a-fA-F]{40}$/)});
+ await t.test('unknown action returns a readable error',async()=>{const response=await fetch(url+'/api/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unknown'})});assert.equal(response.status,400);assert.match((await response.json()).error,/Unknown/)});
+ await t.test('foreign origin cannot send transactions',async()=>{const response=await fetch(url+'/api/action',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://example.com'},body:JSON.stringify({action:'reset'})});assert.equal(response.status,403)});
+ await t.test('deploy via API returns mined receipt',async()=>{const response=await fetch(url+'/api/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reset'})});assert.equal(response.status,200);assert.equal((await response.json()).receipt.status,1)});
+});

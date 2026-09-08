@@ -1,0 +1,17 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {Contract} from 'ethers';import {createProject} from '../project.mjs';
+test('Election regressions and valid flow',async t=>{const p=await createProject();t.after(()=>p.chain.close());const a=p.chain.addresses;
+ await t.test('factory deploys a named election',async()=>assert.equal(await p.contract.electionName(),'Workshop election'));
+ await t.test('unregistered voter rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[5]).castVote.staticCall(1,a[1]),/not registered/));
+ await t.test('cross-constituency vote rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[4]).castVote.staticCall(1,a[1]),/Wrong voter/));
+ await t.test('nonexistent constituency rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[3]).castVote.staticCall(0,a[6]),/Unknown constituency/));
+ await t.test('nonexistent candidate rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[3]).castVote.staticCall(1,a[6]),/Unknown candidate/));
+ await t.test('candidate from wrong constituency rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[3]).castVote.staticCall(1,a[2]),/Wrong candidate/));
+ await t.test('non-admin registration rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[3]).addVoter.staticCall(a[5],'Test','synthetic@example.test','000',1,20),/admin/));
+ await t.test('registration in nonexistent constituency rejected',()=>assert.rejects(()=>p.contract.addVoter.staticCall(a[5],'Test','synthetic@example.test','000',9,20),/Unknown constituency/));
+ await t.test('registered voter increments only the chosen tally',async()=>{await p.action({action:'vote',account:3,district:1,candidate:1});assert.equal(await p.contract.getVotes(1,a[1]),1n);assert.equal(await p.contract.getVotes(2,a[2]),0n)});
+ await t.test('duplicate vote rejected',()=>assert.rejects(()=>p.contract.connect(p.chain.signers[3]).castVote.staticCall(1,a[1]),/already casted/));
+ await t.test('admin registers additional voter who can vote',async()=>{await p.action({action:'register',voter:5,district:1});await p.action({action:'vote',account:5,district:1,candidate:1});assert.equal(await p.contract.getVotes(1,a[1]),2n)});
+ await t.test('vote rejected exactly at deadline without admin close',async()=>{const deadline=Number(await p.contract.electionDuration());await p.chain.rpc.request({method:'evm_mine',params:[{timestamp:deadline}]});assert.equal(await p.chain.timestamp(),deadline);await assert.rejects(()=>p.contract.connect(p.chain.signers[4]).castVote.staticCall(2,a[2]),/deadline/)});
+ await t.test('admin closes and further registration is blocked',async()=>{await p.action({action:'close'});assert.equal(await p.contract.electionStatus(),false);await assert.rejects(()=>p.contract.addConsituency.staticCall(3,'Late'),/closed/)});
+ await t.test('original reference reproduces the registration bug',async()=>{const original=await p.chain.compile('upstream/election.sol','Election');const e=await p.chain.deploy(original,[10,a[0],'Original']);await p.chain.mined(e.addConsituency(1,'District'));await p.chain.mined(e.addCandidate(a[1],'Test','synthetic@example.test','000',1,'Demo'));await p.chain.mined(e.connect(p.chain.signers[5]).castVote(1,a[1]));assert.equal(await e.getVotes(1,a[1]),1n)});
+});

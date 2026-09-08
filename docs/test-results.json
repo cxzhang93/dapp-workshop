@@ -1,0 +1,44 @@
+{
+  "verified_date": "2026-09-09",
+  "environment": {
+    "os": "macOS arm64",
+    "node": "26.0.0"
+  },
+  "command": "./test-all.sh",
+  "results": {
+    "lock": {
+      "tests": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "election": {
+      "tests": 20,
+      "passed": 20,
+      "failed": 0
+    },
+    "crowdfunding": {
+      "tests": 19,
+      "passed": 19,
+      "failed": 0
+    }
+  },
+  "counts_include_six_parent_test_groups": true,
+  "individual_test_cases": 46,
+  "browser_flows": {
+    "lock": [
+      "early withdrawal rejection",
+      "owner override",
+      "successful withdrawal"
+    ],
+    "election": [
+      "seeded deployment",
+      "valid vote",
+      "duplicate rejection",
+      "unregistered rejection"
+    ],
+    "crowdfunding": [
+      "target reached and claim",
+      "failed goal and refund"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+lock/upstream/** -text
+election/upstream/** -text
+*.pptx binary
