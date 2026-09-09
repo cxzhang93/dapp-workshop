@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 // Import this file to use console.log
-// The classroom runtime does not require Hardhat debug imports.
+import "hardhat/console.sol";
 
 contract Lock {
     uint public unlockTime;
@@ -21,9 +21,9 @@ contract Lock {
     }
     function unlock() public{
         require(msg.sender == owner, "You aren't the owner");
-        unlockTime = block.timestamp;
+        unlockTime = block.timestamp;  
     }
-
+    
     function withdraw() public {
         // Uncomment this line to print a log in your terminal
         // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);

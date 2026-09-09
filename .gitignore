@@ -8,3 +8,5 @@
 **/receipt-*.json
 .DS_Store
 .tmp/
+.playwright-cli/
+tokenization/.cache/

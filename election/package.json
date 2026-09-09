@@ -1,18 +1,26 @@
 {
-  "name": "workshop-election",
+  "name": "voting-project-workshop",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
+  "description": "Original schadokar Election dApp with a one-command local runtime",
+  "main": "./server/index.js",
   "scripts": {
-    "start": "node server.mjs",
-    "test": "node --test test/*.test.mjs"
+    "start": "node ./server/index.js",
+    "compile": "node ./server/compile-contract.js",
+    "deploy": "node scripts/deploy-local.js",
+    "test": "node --test test/workshop.test.js",
+    "build": "npm --prefix client run build"
   },
+  "license": "MIT",
   "dependencies": {
-    "ethers": "6.15.0",
+    "body-parser": "1.20.3",
+    "circular-json": "0.5.9",
+    "cors": "2.8.5",
+    "dotenv": "16.6.1",
+    "express": "4.21.2",
+    "fs-extra": "11.3.0",
     "ganache": "7.9.2",
-    "solc": "0.4.25"
+    "solc": "0.4.25",
+    "web3": "1.10.4"
   }
 }

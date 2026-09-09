@@ -1,42 +1,47 @@
 # dApp Workshop 快速开始
 
-本仓库包含三个独立项目：Lock、Election、Crowdfunding。课件完整保留原来的 15 页，再追加 9 页第三个项目内容，讲者指南按 60 分钟安排。
+仓库包含三个可运行的课堂项目和一份约 60 分钟的英文课件。项目 1 与项目 2 从上游原始代码重新整理，并保留原始前端；项目 3 使用 Scaffold-ETH 2 官方 Tokenization challenge。
 
 ## 一键运行
 
-先安装 Node.js 24（最低 20）及 npm。在 macOS 上双击仓库根目录的脚本，或在终端执行：
+安装 Node.js 24 后，在 macOS 双击根目录脚本，或在终端运行：
 
 ```bash
 ./run-lock.command
 ./run-election.command
-./run-crowdfunding.command
+./run-tokenization.command
 ```
 
-分别打开 `http://127.0.0.1:4181`、`http://127.0.0.1:4182`、`http://127.0.0.1:4183`。首次运行自动安装依赖、编译并部署合约；随后可复用已安装依赖。三个项目可同时运行，各自使用独立本地链。
+首次运行会安装固定版本的依赖。脚本随后启动本地区块链、部署合约、启动前后端并打开 `http://127.0.0.1:3000`。三个项目都使用端口 3000 和 8545，因此请一次只运行一个项目；在终端按 Ctrl+C 可完整停止。
 
-不需要钱包插件、助记词、测试币领取或 API key。网页用下拉框选择临时本地账户，后端代该账户签名，在真实本地 EVM 上执行交易。**这不是已验证的 MetaMask 端到端模式。** 原项目 UI 源码放在各项目 `upstream/legacy-ui` 中供对照，启动的是整理后的课堂版 UI。
+| 项目 | 交互路径 | 课堂重点 |
+|---|---|---|
+| [Lock](lock/WORKSHOP.md) | 原始 React 前端 → MetaMask → Ganache → Lock 合约 | 钱包连接、用户签名、时间条件、合约余额 |
+| [Election](election/WORKSHOP.md) | 原始 React 前端 → Express 后端 → Web3 → Ganache → 工厂／选举合约 | 前后端边界，以及后端代签带来的信任假设 |
+| [Tokenization](tokenization/WORKSHOP.md) | Scaffold-ETH Next.js → Burner Wallet 或 MetaMask → Hardhat → ERC-721 | 铸造、元数据、所有权、转账和事件 |
 
-## 演示流程
+## Lock 的 MetaMask 设置
 
-- **Lock**：默认 Owner，点击 Withdraw 应被拒绝；Owner unlock 后再次 Withdraw，余额归零。切换 Other account 可以观察权限拒绝。重新部署可演示正常到期提款。
-- **Election**：选择 `3: Voter A`，选区 1、候选人 1，Cast vote 后票数加一；重复投票会失败。选择 `5: Unregistered`，投票也会被拒绝。原始源码存在的相关问题已在课堂版修复，另有回归测试。
-- **Crowdfunding**：选择 Supporter A，Contribute 两次，每次 0.5 ETH；Advance past deadline；切换 Owner 后 Owner claims。失败路径：New campaign 后只贡献一次，到期后由 Supporter A 退款。
+1. 在 MetaMask 新增网络：RPC `http://127.0.0.1:8545`，Chain ID `31337`，货币符号 `ETH`。
+2. 导入启动脚本打印的测试私钥。它只对应公开的本地开发账户。
+3. 打开 Lock 页面并连接钱包，选择未来的 UTC 解锁时间，依次演示 Deploy、Unlock 和 Withdraw。
+4. 每个写操作都需要在 MetaMask 中确认；页面会等交易上链后刷新余额。
 
-在对应终端按 **Ctrl+C** 停止。重新运行脚本会得到全新的本地链、账户和合约。页面的“新建”按钮只重新部署，不销毁先前合约。
+不要向这个公开开发地址发送真实资产，也不要在真实网络复用测试私钥。
+
+## 测试与文档
 
 ```bash
-./test-all.sh                         # 全部合约和 HTTP 测试
-./run-election.command --test         # 只测 Election
-./run-lock.command --no-open          # 不自动打开浏览器
-PORT=4191 ./run-lock.command          # 换端口
+./run-lock.command --test
+./run-election.command --test
+./run-tokenization.command --test
+./test-all.sh
 ```
 
-## 文件入口
+- [英文 PPT](docs/dApp-workshop-original-plus-tokenization.pptx)：保留原来的 15 页，追加三个项目的架构、演示步骤和 60 分钟安排。
+- [英文讲者指南](docs/PRESENTER-GUIDE.md)：逐页时间、操作步骤和失败时的替代方案。
+- [前后端架构说明](docs/ARCHITECTURE.md)：说明谁持有密钥、谁签名、哪些状态在链上。
+- [验证记录](docs/VERIFICATION.md)：本地测试、浏览器检查和仍待人工确认的项目。
+- [第三方来源与许可](THIRD-PARTY-NOTICES.md)：三个项目的来源提交与许可边界。
 
-- [保留原稿并追加第三项目的 PPT](docs/dApp-workshop-original-plus-crowdfunding.pptx)
-- [英文讲者指南与一分钟级时间安排](docs/PRESENTER-GUIDE.md)
-- [代码改动和验证结果](docs/VERIFICATION.md)
-- [Lock 文档](lock/README.md)、[Election 文档](election/README.md)、[Crowdfunding 文档](crowdfunding/README.md)
-- [原始课件内容保留检查](docs/PPT-preservation.json)
-
-原课件中的历史表述保留不动，需口头补充的说明写在讲者指南。依赖安装放在课前，60 分钟包含现场演示、练习和问答。完整排障信息见 [English README](README.md)。
+Tokenization 的本地铸造和转账不需要公网；可选的 IPFS 上传练习需要网络。代码用于教学，未经过生产安全审计。

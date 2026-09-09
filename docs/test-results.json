@@ -2,43 +2,44 @@
   "verified_date": "2026-09-09",
   "environment": {
     "os": "macOS arm64",
-    "node": "26.0.0"
+    "node": "26.0.0",
+    "supported_classroom_and_ci_node": "24"
   },
   "command": "./test-all.sh",
   "results": {
     "lock": {
-      "tests": 13,
-      "passed": 13,
-      "failed": 0
+      "contract_tests_passed": 1,
+      "react_production_build": "passed"
     },
     "election": {
-      "tests": 20,
-      "passed": 20,
-      "failed": 0
+      "contract_and_backend_tests_passed": 1,
+      "react_production_build": "passed"
     },
-    "crowdfunding": {
-      "tests": 19,
-      "passed": 19,
-      "failed": 0
+    "tokenization": {
+      "official_hardhat_tests_passed": 3,
+      "nextjs_type_check": "passed"
     }
   },
-  "counts_include_six_parent_test_groups": true,
-  "individual_test_cases": 46,
+  "one_command_runtime": {
+    "lock": "Ganache and original React UI reached ready state",
+    "election": "Ganache, factory deployment, Express and original React UI reached ready state",
+    "tokenization": "Hardhat, YourCollectible deployment and official Next.js UI reached ready state"
+  },
   "browser_flows": {
     "lock": [
-      "early withdrawal rejection",
-      "owner override",
-      "successful withdrawal"
+      "EIP-1193 provider connection",
+      "contract deployment",
+      "owner unlock",
+      "withdrawal and state refresh"
     ],
     "election": [
-      "seeded deployment",
-      "valid vote",
-      "duplicate rejection",
-      "unregistered rejection"
+      "create election",
+      "open election detail route",
+      "add constituency"
     ],
-    "crowdfunding": [
-      "target reached and claim",
-      "failed goal and refund"
+    "tokenization": [
+      "official My NFTs page loaded with deployed contract"
     ]
-  }
+  },
+  "manual_check_pending": "Approve the Lock transaction prompts in the presenter's installed MetaMask extension before class."
 }

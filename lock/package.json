@@ -1,18 +1,17 @@
 {
-  "name": "workshop-lock",
+  "name": "hello-dapp-workshop",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
+  "description": "Original BlockchainCourseNTU Lock dApp with a one-command local runtime",
   "scripts": {
-    "start": "node server.mjs",
-    "test": "node --test test/*.test.mjs"
+    "prepare:artifact": "node scripts/prepare-artifact.mjs",
+    "build": "npm run prepare:artifact && npm --prefix webapp run build",
+    "test": "node --test test/workshop.test.mjs"
   },
   "dependencies": {
     "ethers": "6.15.0",
     "ganache": "7.9.2",
-    "solc": "0.8.30"
-  }
+    "solc": "0.8.9"
+  },
+  "license": "ISC"
 }

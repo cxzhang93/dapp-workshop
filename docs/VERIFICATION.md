@@ -1,66 +1,44 @@
 # Changes and verification
 
-Verified locally on **2026-09-09**, macOS arm64, Node **26.0.0**. Recommended project runtime: Node 24 (also used by CI). Exact dependencies are recorded in each lockfile.
+Verified locally on 2026-09-09 on macOS arm64. The supported classroom and CI runtime is Node 24; the local checks also passed with Node 26.0.0.
 
-## Automated results
+## Automated checks
 
-Command: `./test-all.sh` from the repository root, including a clean `npm ci --ignore-scripts` when lockfiles changed.
-
-| Project | Node test count, including parent groups | Failed | Individual subtests |
-|---|---:|---:|---:|
-| Lock | 13 | 0 | 11 |
-| Election | 20 | 0 | 18 |
-| Crowdfunding | 19 | 0 | 17 |
-| Total | 52 | 0 | 46 |
-
-The six parent groups account for the difference between 52 reported tests and 46 individual test cases. The suite verifies real deployments and calls on Ganache, not mocked contract functions.
-
-- **Lock:** exact wei precision, early withdrawal, owner authorization, normal expiry, early override, invalid input and deployment after an idle clock.
-- **Election:** factory deployment, registration, candidate/constituency existence, cross-constituency rejection, duplicate votes, valid additional registration, exact deadline rejection, admin closure, and a reproduction against the unchanged upstream contract.
-- **Crowdfunding:** zero/late contribution, exact deadline, owner restrictions, early settlement rejection, successful claim, failed-goal refund, isolated supporter credits and repeated settlement.
-- **Every project:** HTML/state loading, unknown-action errors, cross-origin rejection and a confirmed deployment through its HTTP API.
-
-Solc 0.8.30 compiles Lock and Crowdfunding for Shanghai. Election uses solc 0.4.25 to preserve the original API and schema. Ganache's JavaScript fallback warnings and the legacy compiler's asm.js warning do not prevent these tests from passing.
-
-## Root launcher and browser verification
-
-All three root scripts were started with `--no-open`, then their printed URLs were opened in the browser:
-
-| Project | Browser observations |
+| Project | Checks |
 |---|---|
-| Lock, port 4181 | Early Withdraw rejected; Owner unlock confirmed; withdrawal confirmed with contract balance 0.0 ETH. |
-| Election, port 4182 | Fresh factory/election seeded; Voter A's vote raised Candidate A tally to 1; repeat vote rejected; unregistered account rejected. |
-| Crowdfunding, port 4183 | Two 0.5 ETH contributions reached target; after deadline owner claim emptied the contract and set claimed=true. Fresh campaign with 0.5 ETH refunded successfully after expiry. |
+| Lock | Original contract compiled with solc 0.8.9; deployment, owner unlock and withdrawal passed; original React production build completed. |
+| Election | Solidity 0.4.25 factory compiled and deployed; election creation and factory listing passed; original React production build completed. |
+| Tokenization | Official Hardhat deployment, minting and enumeration tests passed; Next.js TypeScript check passed. |
 
-The frontend displays mined receipt status 1 for successful writes. The default launcher's automatic browser opening uses macOS `open` or Linux `xdg-open`; no wallet plugin is required. Servers bind only to 127.0.0.1. The root scripts refuse occupied ports rather than killing other processes.
+Run all checks with `./test-all.sh`. GitHub Actions runs the same three jobs independently on Ubuntu and Node 24.
 
-## Source adaptations
+## One-command runtime and browser checks
 
-| Original issue | Workshop change |
+| Project | Observed result |
 |---|---|
-| Lock React uses millisecond dates for a second-based contract clock | Deployment computes a future timestamp from a refreshed local block. |
-| Lock amount parsed through JavaScript integers | `parseEther` converts decimal ETH strings to exact bigint wei. |
-| Receipt read immediately after transaction submission | Every write awaits a mined receipt before success and state refresh. |
-| Mixed providers, hard-coded nonce/fees and fragile RPC error parsing | Independent local runtime uses the selected temporary account and structured revert reasons. |
-| Election accepts unregistered voters | `voterExist[msg.sender]` check plus regression test. |
-| Election permits cross-constituency voting | Explicit voter and candidate constituency checks. |
-| Default mapping entry allows nonexistent candidate/district | Existence checks for both candidate and constituency. |
-| Election deadline depends on admin close | `castVote` checks deadline directly, including an exact-boundary test. |
-| Invalid registrations and ongoing registration after expiry | Nonzero/existence validation and active/deadline checks. |
-| Original Windows-only commands and fragmented frontend/server setup | Root Bash launchers, pinned independent dependencies and pre-seeded local deployments. |
+| Lock | Launcher started Ganache and the original React app. An EIP-1193 browser provider connected, deployed the contract, executed owner unlock, withdrew the balance, and refreshed the UI. |
+| Election | Launcher deployed the factory and started Express plus the original React app. The browser created “Workshop Demo Election,” opened its detail route, and displayed the original constituency workflow. |
+| Tokenization | Launcher started Hardhat, deployed `YourCollectible`, and opened the official Scaffold-ETH 2 My NFTs page with wallet, holdings, transfers, IPFS, and Debug Contracts navigation. |
 
-Upstream source is retained under `upstream/`. The default UI/runtime is a new classroom adaptation, not a claim that the original React UI's browser-wallet flow is unchanged or fully validated.
+The Lock browser automation used a local EIP-1193 provider that implements the same request interface used by MetaMask. A real MetaMask extension requires manual confirmation clicks; that popup interaction remains a presenter pre-class check. Contract execution and the browser/provider path passed.
 
-## PPT verification
+## Source preservation and changes
 
-The combined PPT has 24 slides: the unchanged original 15 plus 9 added Crowdfunding slides. Package validation passed. Original slide XML, slide relationships, images, notes, masters and layouts are compared byte-for-byte; `PPT-preservation.json` contains the source SHA-256 and hashes of 96 preserved package parts. Only slide/package enumeration metadata is extended, with equivalent custom XML copied under `ppt/` for compatibility.
+Projects 1 and 2 were rebuilt from captured upstream source rather than the earlier uniform workshop UI.
 
-The deck is rendered for visual inspection. No claim is made that it was opened in native PowerPoint. Original pedagogical inaccuracies are left in place as requested; presenter notes explain them. The 60-minute budget is a schedule, not a measured classroom rehearsal.
+- Lock keeps the original React presentation and browser-wallet model. Compatibility fixes correct millisecond/second conversion, use exact wei strings, switch or add the local network, wait for receipts, refresh state, and compile the artifact locally.
+- Election keeps the original React routes/forms, Express API, and Solidity contract. Compatibility fixes pin the runtime, correct a filename case mismatch, automate factory deployment, add a health endpoint, and package Semantic UI CSS locally instead of loading a broken browser runtime from a CDN.
+- Tokenization comes from the official Scaffold-ETH 2 challenge. The workshop adds launcher integration, one development-origin setting, documentation, and two narrow TypeScript casts.
+
+## PowerPoint verification
+
+The delivered deck contains 26 slides: the supplied 15 slides followed by 11 workshop slides. The added section explains the 60-minute schedule, three signing paths, Lock and Election frontend/backend boundaries, the official Tokenization source, mint/transfer evidence, and one-command startup.
+
+The final deck was rendered slide by slide, inspected for clipping and overlap, and passed the presentation package validator. `PPT-preservation.json` records both file hashes, the exact ordered-text comparison for original slides 1–15, and the visual inspection scope. Importing and exporting the source changes PowerPoint package metadata, so preservation is asserted at the slide-content and rendered-content level rather than as a byte-identical package. The timing is a teaching plan rather than a measured classroom rehearsal.
 
 ## Limits
 
-Not verified: production deployment, real wallet signing, full dependency security audit, arbitrary malicious receiver contracts or exhaustive reentrancy behavior. Election remains a synthetic classroom poll with public data and admin registration, not a private or legally binding election system. Do not expose the demo servers or use actual funds.
-
-## GitHub CI
-
-The repository workflow runs the three projects independently on Ubuntu with Node 24. Its result is recorded in the repository's Actions tab. Local execution above is independent evidence and does not assume the CI result.
+- Manual MetaMask extension prompts remain a pre-class verification item because browser automation cannot approve the presenter's extension popup.
+- Optional IPFS upload and public testnet deployment were not part of the local one-hour path.
+- No production deployment, contract security audit, accessibility audit, or dependency vulnerability remediation was performed.
+- Election is an educational public-data poll with server-signed actions, not a secret or legally binding election system.

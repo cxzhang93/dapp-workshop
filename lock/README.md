@@ -1,28 +1,71 @@
-# Lock
+# MVP Project for Blockchain Course of NTU in AY2022-2023
+---
+This project demonstrates a minimal viable preparation for dApp construction using Hardhat developement framework.
+It comes with a `Lock` contract, a simple web app that can deploy contract to the blockchain and user can interact with the running contract.
 
-Start from the repository root with `./run-lock.command`, or run `npm ci --ignore-scripts` and `npm start` in this folder. Default URL: http://127.0.0.1:4181. Tests: `npm test`.
+### Prerequisite
+* npx. https://www.npmjs.com/package/npx
+* nodejs. https://nodejs.org/en/download/package-manager/
+* npm.  https://nodejs.org/en/download/package-manager/
+* Chrome browser.
+* MetaMask wallet. https://chrome.google.com/webstore/category/extensions -> search "metamask", then add the extension to your chrome browser.
+The tested setup on Ubuntu 20.04 LTS is:
+```
+apt install -y nodejs npm 
+npm install -g npx
+```
 
-## Live walkthrough
+### Quick start
 
-1. The initial lock contains 1 local ETH and a deadline about 600 seconds away. Acting account defaults to Owner.
-2. Click **Withdraw** immediately. Expected: `You can't withdraw yet`.
-3. Select **Other account**, then **Owner unlock**. Expected: an owner authorization error.
-4. Select **Owner**, then **Owner unlock**. Expected: confirmed transaction, unlock timestamp updated.
-5. Click **Withdraw**. Expected: confirmed receipt and Balance (ETH) `0.0`.
-6. **Deploy new lock** with a chosen deposit/duration. Click **Advance past deadline**, then **Withdraw** as Owner to show the normal timed path.
+Step 1. clone the git repo and then install all the dependent packages.
+```
+git clone https://github.com/BlockchainCourseNTU/hello-dapp.git
+cd  hello-dapp/hello-dapp
+npm install
+```
 
-Deposit values are ETH strings, converted with `parseEther`, so `1.000000000000000001` is preserved exactly as wei. The runtime mines a fresh block before computing a deployment deadline, so a lock can still be created after the server has been idle.
+Step 2. compile `Lock` contract
+```
+npx hardhat compile
+```
 
-## Files and changes
+Step 3. copy the compiled artifact from `artifacts/contracts/Lock.sol/Lock.json` to `webapp/src`
+```
+cp artifacts/contracts/Lock.sol/Lock.json webapp/src
+```
 
-- `contracts/Lock.sol`: the upstream contract with the unused Hardhat console import removed. Owner override and `transfer` behavior are retained.
-- `project.mjs`: deployment and account-specific actions.
-- `runtime.mjs`, `server.mjs`: compiler, local EVM, loopback HTTP service and shutdown.
-- `public/`: independent workshop UI. Successful writes wait for receipts and refresh state; errors stay readable.
-- `test/`: authorization, deadline, precision, idle-clock and HTTP tests.
-- `upstream/Lock.sol`: unchanged contract reference.
-- `upstream/legacy-ui/`: original React UI source, retained for comparison; not the default application.
+Step 4. setup a blockchain test network run by hardhat node (in another terminal)
+```
+npx hardhat node
+```
 
-Original: [BlockchainCourseNTU/hello-dapp](https://github.com/BlockchainCourseNTU/hello-dapp), commit `1c1ca2286705574d29e1ec1068bf2817d944f621`, nested project `hello-dapp/`.
+Step 5. setup our website
+```
+cd webapp 
+npm install
+npm run start
+```
+The website would hosted on your http://localhost:3000
 
-The original UI mixes millisecond dates with a second-based contract timestamp, uses integer parsing for amounts, and reads receipts immediately after submission. The workshop runtime removes those failure points. The original contract permits early release by the owner, so this is not an irreversible vesting contract. Contract recipients with complex receive logic may reject `transfer`; that behavior is intentionally retained and not production-hardened here.
+
+### Other Educational Examples
+More complicated examples like election dApp can refer to https://github.com/schadokar/election-ethereum-react-dapp.git.
+As this example contains a minor issue, please correct the issue using the following commands.
+```bash
+git clone https://github.com/schadokar/election-ethereum-react-dapp.git
+cd election-ethereum-react-dapp
+cp ethereum/contracts/election.sol ethereum/contracts/Election.sol
+```
+More instructions can refer to its [README](https://github.com/schadokar/election-ethereum-react-dapp#readme).
+
+
+<!-- 
+Try running some of the following tasks:
+
+```shell
+npx hardhat help
+npx hardhat test
+GAS_REPORT=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.ts
+``` -->

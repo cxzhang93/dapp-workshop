@@ -1,100 +1,87 @@
-# dApp workshop: Lock, Election and Crowdfunding
+# dApp workshop: Lock, Election and Tokenization
 
-Three self-contained teaching projects and an English slide deck. The PPT keeps **all 15 original slides unchanged** and appends **9 Crowdfunding slides**, with a 60-minute teaching schedule.
+This repository contains three runnable teaching projects and an English PowerPoint for a 60-minute blockchain course session. Projects 1 and 2 start from their original upstream source and keep their original frontends. Project 3 is the official Scaffold-ETH 2 Tokenization challenge.
 
-[中文快速开始](README.zh-CN.md) · [Slides](docs/dApp-workshop-original-plus-crowdfunding.pptx) · [Presenter guide](docs/PRESENTER-GUIDE.md) · [Changes and verification](docs/VERIFICATION.md)
+[中文快速开始](README.zh-CN.md) · [Workshop slides](docs/dApp-workshop-original-plus-tokenization.pptx) · [Presenter guide](docs/PRESENTER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Verification](docs/VERIFICATION.md)
 
-## Start a project
+## One-command startup
 
-Install **Node.js 24** (Node 20+ required) with npm. On macOS, double-click a `.command` file in the repository root, or run it in Terminal:
+Install Node.js 24, then double-click a `.command` file on macOS or run it in Terminal:
 
 ```bash
 ./run-lock.command
 ./run-election.command
-./run-crowdfunding.command
+./run-tokenization.command
 ```
 
-| Project | Local URL | What the script starts |
+Each launcher installs pinned dependencies on its first run, starts a fresh local chain, deploys the contract, starts every required server, and opens the original or official frontend at `http://127.0.0.1:3000`. Run one project at a time because all three use ports 3000 and 8545.
+
+| Project | Frontend and transaction path | Classroom focus |
 |---|---|---|
-| [Lock](lock/README.md) | http://127.0.0.1:4181 | Local chain, compiled Lock, funded deployment, interactive page |
-| [Election](election/README.md) | http://127.0.0.1:4182 | Local chain, factory and election, synthetic voters/candidates, interactive page |
-| [Crowdfunding](crowdfunding/README.md) | http://127.0.0.1:4183 | Local chain, campaign with a 1 ETH target, interactive page |
+| [Lock](lock/WORKSHOP.md) | Original React UI → MetaMask/browser wallet → Ganache → `Lock.sol` | Wallet connection, user signatures, timestamps and contract balance |
+| [Election](election/WORKSHOP.md) | Original React UI → Express API → server Web3 account → Ganache → factory/election contracts | Frontend/backend separation and the trust cost of server-signed transactions |
+| [Tokenization](tokenization/WORKSHOP.md) | Official Scaffold-ETH Next.js UI → burner wallet or MetaMask → Hardhat → ERC-721 | Minting, metadata, ownership, transfers and events |
 
-The first run installs pinned dependencies and needs internet. Subsequent runs reuse them unless the lockfile changed. All compilers are npm dependencies, so compilation does not fetch remote compiler binaries. Wait for `READY` and use the printed **127.0.0.1** URL. The browser opens automatically; the three projects can run simultaneously.
+The first run needs internet for dependency installation. The Tokenization page can run locally after installation; its optional IPFS upload exercises still need internet.
 
-The scripts generate disposable accounts and local ETH. **No MetaMask, seed phrase, RPC account, API key, public testnet or real funds are needed.** The webpage selects a local account; the server signs that account's transactions. This is a classroom interface to a real local EVM, not a verified browser-wallet flow. It is intentionally a new workshop UI; original UI sources are retained under `lock/upstream/legacy-ui` and `election/upstream/legacy-ui` for reference.
+## Lock and MetaMask setup
+
+The Lock launcher prints the disposable development private key. In MetaMask:
+
+1. Add a network named `Localhost 8545` with RPC URL `http://127.0.0.1:8545`, chain ID `31337`, and currency symbol `ETH`.
+2. Import the printed account. It is the standard public Hardhat development key and only controls local test ETH.
+3. Open `http://127.0.0.1:3000`, connect the wallet, choose a future UTC unlock time and deploy.
+4. Confirm deployment, unlock, and withdrawal in MetaMask. The page refreshes the contract balance after each confirmed transaction.
+
+Never send real assets to the disposable development address or reuse its private key outside a local chain.
 
 ## Stop, reset and test
 
-- Press **Ctrl+C** in a project's terminal to stop its server and chain.
-- Restart its script for a fresh chain and new accounts. All local state is temporary.
-- The deploy/new-campaign buttons create a fresh contract instance on the current chain. Previous instances remain until restart.
-- Do not close the terminal while presenting.
+Press Ctrl+C in the launcher terminal to stop its frontend, backend, and chain. Restarting creates a clean local chain.
 
 ```bash
-# Keep the browser closed, useful on a remote machine or in CI.
-./run-lock.command --no-open
-
-# A different port. The script prints and opens the matching URL.
-PORT=4191 ./run-lock.command
-
-# Run one project's contract and HTTP tests.
-./run-election.command --test
-
-# Run all projects, stopping on the first failure.
-./test-all.sh
+./run-lock.command --no-open       # start without opening a browser
+./run-election.command --test      # contract test and frontend build
+./run-tokenization.command --test  # official contract tests and TypeScript check
+./test-all.sh                      # verify all three projects
 ```
 
-The `.command` files are Bash scripts and also run from a Linux shell. On Windows, use WSL with Node installed inside WSL. Native Windows double-click is not provided. macOS and the Node versions actually exercised are listed in [verification](docs/VERIFICATION.md); CI checks Linux with Node 24.
+The scripts require Node 22 or newer; Node 24 is the supported classroom and CI version. Native Windows users can run them in WSL.
 
 ## Repository layout
 
 ```text
-run-lock.command              One-command Lock launcher
-run-election.command          One-command Election launcher
-run-crowdfunding.command      One-command Crowdfunding launcher
-launch.sh                     Dependency install, startup, browser and cleanup
-test-all.sh                  All contract and HTTP tests
-lock/                         Contract, local runtime, UI, tests, upstream reference
-election/                    Patched Election and factory, UI, tests, upstream reference
-crowdfunding/                 New contract, local runtime, UI and tests
-docs/                         PPT, presenter guide, verification and attribution
+run-lock.command            Lock one-command launcher
+run-election.command        Election one-command launcher
+run-tokenization.command    Tokenization one-command launcher
+launch.sh                   Shared installation, startup and cleanup logic
+test-all.sh                 All project checks
+lock/                       Original Lock source and frontend, plus runtime fixes
+election/                   Original Election source, frontend and Express backend
+tokenization/               Official Scaffold-ETH 2 Tokenization challenge
+docs/                       Slides, presenter notes, architecture and verification
 ```
 
-Each project has its own `package.json`, `package-lock.json`, `contracts/`, `public/`, runtime and tests. Copying one project folder is enough to run `npm ci --ignore-scripts && npm start` inside it. The small runtime and UI shell are copied into each folder intentionally to keep the examples independent.
+The workshop-specific changes focus on reproducible local startup and compatibility. They do not replace the original user interfaces. Source commits and license boundaries are recorded in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-## Demo paths
+## Suggested live demos
 
-1. **Lock:** try an early withdrawal, use the owner override, then withdraw. Try the same override from another account and inspect the revert.
-2. **Election:** Voter A votes for Candidate A in district 1. Repeat the vote or select an unregistered voter to see contract validation. Advance time and verify the deadline, then close as admin.
-3. **Crowdfunding:** contribute twice, advance time and claim as owner. On a fresh campaign, contribute only once, advance time and refund as supporter.
+- **Lock:** connect MetaMask, deploy with a short future deadline, inspect the contract balance, unlock as owner, and withdraw. Ask students which actions create wallet confirmations.
+- **Election:** create an election through the original form, open its address, and add a constituency. Trace one request from React to Express and then to the factory contract.
+- **Tokenization:** use the local burner wallet or MetaMask, mint an NFT, open an incognito window for a second address, transfer the token, and verify `ownerOf` plus the `Transfer` event.
 
-Every successful write waits for a mined receipt. The page shows the transaction hash, block number, receipt status and gas used. Rejected calls appear as readable errors without treating a transaction hash as success.
-
-## Improvements and scope
-
-- Lock keeps the original owner override policy; the new UI uses exact ETH-to-wei conversion, fresh state reads and confirmation handling.
-- Election adds voter/candidate/constituency existence checks, constituency matching, deadline enforcement and registration validation. The original vulnerable source remains in `election/upstream/election.sol`, with a regression test that reproduces its unregistered-voter bug.
-- Crowdfunding tests the success and refund branches, authorization and repeated settlement.
-- All demo servers bind to loopback, validate the Host/Origin, and expose a small set of teaching actions. Do not expose them to the internet or use real funds.
-- Synthetic election names/contact values are test fixtures. The legacy schema stores data publicly and does not provide secret ballots.
-- Original slides are preserved even where they contain oversimplifications. The presenter guide explains those points and the updated code behavior.
-
-These are teaching implementations, not production-audited systems. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for source commits and license boundaries.
+Detailed speaking cues and fallback steps are in [docs/PRESENTER-GUIDE.md](docs/PRESENTER-GUIDE.md).
 
 ## Troubleshooting
 
-| Symptom | What to do |
+| Symptom | Fix |
 |---|---|
-| `node` or `npm` not found | Install Node 24, reopen Terminal, then rerun. With nvm: `nvm install` and `nvm use` in this repository. |
-| Port occupied | Stop the existing project terminal, or use `PORT=4191 ./run-lock.command`. The script does not kill unrelated processes. |
-| Browser did not open | Paste the printed `http://127.0.0.1:PORT` URL into your browser. |
-| `Use the printed 127.0.0.1 URL` | Use 127.0.0.1 instead of localhost. Host checking is intentional. |
-| Dependency download failed | Check network access and rerun. You need internet only for installation. |
-| Native µWS/bigint binding warning | Ganache falls back to JavaScript on newer Node releases; inspect READY and test results. Node 24 is the preferred runtime. |
-| `Invalid asm.js` warning in Election | This comes from the legacy 0.4.25 compiler. Compilation is checked; tests verify actual behavior. |
-| Deadline already passed | Create a fresh lock/election/campaign. Local time also advances with elapsed real time. |
-| Vote rejected | Check account role, registration, constituency, candidate and whether the account has voted already. |
-| Permission denied after copying files | `chmod +x *.command launch.sh test-all.sh`. Git preserves executable bits when cloned normally. |
+| Port 3000, 4000 or 8545 is occupied | Stop the other workshop launcher. The scripts do not kill unrelated processes. |
+| MetaMask shows the wrong network | Switch to chain ID 31337 and reload the Lock page. |
+| MetaMask account has no local ETH | Import the key printed by the Lock launcher. |
+| Browser does not open | Visit the printed `http://127.0.0.1:3000` URL manually. |
+| Dependency installation fails | Check network access, then rerun the same launcher. |
+| Ganache prints a native binding warning | Its JavaScript fallback works; use Node 24 for the supported setup. |
+| Election prints an asm.js warning | The upstream contract uses the legacy Solidity 0.4.25 compiler; the test verifies compilation and deployment. |
 
-The lockfiles mark Ganache's bundled macOS-only `fsevents` entry optional so Linux installation can skip it. Keep the committed lockfiles for reproducibility.
+These projects use disposable local chains and classroom data. They are not audited production applications.
