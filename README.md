@@ -1,6 +1,6 @@
 # dApp workshop: Lock, Election and Tokenization
 
-[Workshop slides](docs/dApp-workshop-original-plus-tokenization.pptx) · [Presenter guide](docs/PRESENTER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Verification](docs/VERIFICATION.md)
+[Workshop slides](docs/dApp-workshop-original-plus-tokenization.pptx) · [Architecture](docs/ARCHITECTURE.md) · [Verification](docs/VERIFICATION.md)
 
 ## One-command startup
 
@@ -69,14 +69,6 @@ docs/                       Slides, presenter notes, architecture and verificati
 ```
 
 The workshop-specific changes focus on reproducible local startup and compatibility. They do not replace the original user interfaces. Source commits and license boundaries are recorded in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-
-## Suggested live demos
-
-- **Lock:** connect MetaMask, deploy with a short future deadline, inspect the contract balance, unlock as owner, and withdraw. Ask students which actions create wallet confirmations.
-- **Election:** create an election through the original form, open its address, and add a constituency. Trace one request from React to Express and then to the factory contract.
-- **Tokenization:** use the local burner wallet or MetaMask, mint an NFT, open an incognito window for a second address, transfer the token, and verify `ownerOf` plus the `Transfer` event.
-
-Detailed speaking cues and fallback steps are in [docs/PRESENTER-GUIDE.md](docs/PRESENTER-GUIDE.md).
 
 ## Troubleshooting
 
