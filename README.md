@@ -2,7 +2,7 @@
 
 This repository contains three runnable teaching projects and an English PowerPoint for a 60-minute blockchain course session. Projects 1 and 2 start from their original upstream source and keep their original frontends. Project 3 is the official Scaffold-ETH 2 Tokenization challenge.
 
-[中文快速开始](README.zh-CN.md) · [Workshop slides](docs/dApp-workshop-original-plus-tokenization.pptx) · [Presenter guide](docs/PRESENTER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Verification](docs/VERIFICATION.md)
+[Workshop slides](docs/dApp-workshop-original-plus-tokenization.pptx) · [Presenter guide](docs/PRESENTER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Verification](docs/VERIFICATION.md)
 
 ## One-command startup
 
