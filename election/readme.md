@@ -77,7 +77,7 @@ Admin can't be a voter or a candidate.
 
 ### Step 1:
 
-Compile and Deploy the Election Factory from the home page. http://localhost:3000
+Compile and Deploy the Election Factory from the workshop home page. http://127.0.0.1:3002
 
 Click on Compile to compile the contract.
 

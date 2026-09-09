@@ -45,7 +45,7 @@ cd webapp
 npm install
 npm run start
 ```
-The website would hosted on your http://localhost:3000
+The workshop launcher hosts the website at http://127.0.0.1:3001
 
 
 ### Other Educational Examples

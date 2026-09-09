@@ -5,7 +5,7 @@ The three demos deliberately show different dApp boundaries. Ask the same questi
 ## Project 1: Lock
 
 ```text
-Original React frontend
+Original React frontend, port 3001
         ↓ EIP-1193 request
 MetaMask browser wallet
         ↓ signed transaction
@@ -21,7 +21,7 @@ This pattern resembles a public dApp because the application server never sees t
 ## Project 2: Election
 
 ```text
-Original React frontend
+Original React frontend, port 3002
         ↓ HTTP JSON
 Original Express backend
         ↓ Web3 call signed by a Ganache account
@@ -37,7 +37,7 @@ This architecture reduces classroom setup, but users must trust the backend to s
 ## Project 3: Tokenization
 
 ```text
-Official Scaffold-ETH 2 Next.js frontend
+Official Scaffold-ETH 2 Next.js frontend, port 3003
         ↓ wagmi and Scaffold hooks
 Burner wallet or MetaMask through RainbowKit
         ↓ signed transaction

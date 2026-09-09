@@ -88,17 +88,17 @@ run_lock() {
     return
   fi
   check_port 8545
-  check_port 3000
+  check_port 3001
   (cd "$ROOT/lock" && npm run prepare:artifact)
   "$ROOT/lock/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "test test test test test test test test test test test junk" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
   PIDS+=("$!")
   wait_rpc
-  (cd "$ROOT/lock/webapp" && BROWSER=none GENERATE_SOURCEMAP=false HOST=127.0.0.1 PORT=3000 npm start) &
+  (cd "$ROOT/lock/webapp" && BROWSER=none GENERATE_SOURCEMAP=false HOST=127.0.0.1 PORT=3001 npm start) &
   PIDS+=("$!")
-  wait_url http://127.0.0.1:3000
-  echo "Lock dApp ready: http://127.0.0.1:3000"
+  wait_url http://127.0.0.1:3001
+  echo "Lock dApp ready: http://127.0.0.1:3001"
   print_lock_wallet
-  open_browser http://127.0.0.1:3000
+  open_browser http://127.0.0.1:3001
   wait "$!"
 }
 
@@ -111,7 +111,7 @@ run_election() {
   fi
   check_port 8545
   check_port 4000
-  check_port 3000
+  check_port 3002
   "$ROOT/election/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "test test test test test test test test test test test junk" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
   PIDS+=("$!")
   wait_rpc
@@ -119,11 +119,11 @@ run_election() {
   (cd "$ROOT/election" && PORT=4000 npm start) &
   PIDS+=("$!")
   wait_url http://127.0.0.1:4000/health
-  (cd "$ROOT/election/client" && BROWSER=none HOST=127.0.0.1 PORT=3000 npm start) &
+  (cd "$ROOT/election/client" && BROWSER=none HOST=127.0.0.1 PORT=3002 npm start) &
   PIDS+=("$!")
-  wait_url http://127.0.0.1:3000
-  echo "Election dApp ready: http://127.0.0.1:3000"
-  open_browser http://127.0.0.1:3000
+  wait_url http://127.0.0.1:3002
+  echo "Election dApp ready: http://127.0.0.1:3002"
+  open_browser http://127.0.0.1:3002
   wait "$!"
 }
 
@@ -141,16 +141,16 @@ run_tokenization() {
     return
   fi
   check_port 8545
-  check_port 3000
+  check_port 3003
   (cd "$ROOT/tokenization" && yarn_bin chain) &
   PIDS+=("$!")
   wait_rpc
   (cd "$ROOT/tokenization" && yarn_bin deploy)
-  (cd "$ROOT/tokenization" && yarn_bin start) &
+  (cd "$ROOT/tokenization" && export PORT=3003 && yarn_bin start) &
   PIDS+=("$!")
-  wait_url http://127.0.0.1:3000
-  echo "Scaffold-ETH Tokenization ready: http://127.0.0.1:3000/myNFTs"
-  open_browser http://127.0.0.1:3000/myNFTs
+  wait_url http://127.0.0.1:3003
+  echo "Scaffold-ETH Tokenization ready: http://127.0.0.1:3003/myNFTs"
+  open_browser http://127.0.0.1:3003/myNFTs
   wait "$!"
 }
 

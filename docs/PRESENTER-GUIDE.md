@@ -7,7 +7,7 @@ Slides 1–15 retain the supplied deck. Slides 16–26 add the session map, arch
 1. Install Node 24 and run `./test-all.sh`.
 2. Launch every project once so dependency downloads complete, then stop each with Ctrl+C.
 3. Add MetaMask network `http://127.0.0.1:8545`, chain ID 31337. Import the disposable key printed by the Lock launcher.
-4. Keep the three project guides open. Start only the project used in the current segment because the launchers share ports.
+4. Keep the three project guides open. The fixed frontend addresses are Lock `:3001`, Election `:3002`, and Tokenization `:3003`; start only the current project because their local chains share RPC port 8545.
 5. Use a fresh browser profile or disconnect MetaMask before the Tokenization burner-wallet exercise.
 
 ## Timing
@@ -74,7 +74,7 @@ Trace React to the EIP-1193 provider, MetaMask confirmation, Ganache, and `Lock.
 
 ### 19. Lock live demo (5 min)
 
-Run `./run-lock.command`. Connect MetaMask, deploy with a near future UTC time and small wei amount, confirm the deployment, inspect the balance, call owner unlock, then withdraw. Point out each wallet prompt and mined confirmation.
+Run `./run-lock.command` and open `http://127.0.0.1:3001`. Connect MetaMask, deploy with a near future UTC time and small wei amount, confirm the deployment, inspect the balance, call owner unlock, then withdraw. Point out each wallet prompt and mined confirmation.
 
 If MetaMask blocks the local network, use the terminal values to add chain ID 31337 manually. Never use a real account or funds.
 
@@ -84,7 +84,7 @@ Trace React HTTP requests to Express on port 4000. Express uses Web3 and an unlo
 
 ### 21. Election original UI demo (4 min)
 
-Run `./run-election.command`. Create an election, open the returned card, and add a constituency. Show one React component, its Express route, and the called contract method. Use the transaction hash in the server response to connect the layers.
+Run `./run-election.command` and open `http://127.0.0.1:3002`. Create an election, open the returned card, and add a constituency. Show one React component, its Express route, and the called contract method. Use the transaction hash in the server response to connect the layers.
 
 ### 22. Project 3: Scaffold-ETH 2 Tokenization (3 min)
 
@@ -96,7 +96,7 @@ Trace Next.js and wagmi to the signer and Hardhat. Explain the difference betwee
 
 ### 24. Mint, transfer and explain the evidence (6 min)
 
-Run `./run-tokenization.command`. Use the burner wallet for speed or connect MetaMask. Mint an NFT. Open an incognito window, fund its burner address, and transfer the NFT. Verify the receiving page, `ownerOf(tokenId)`, and the `Transfer` event. These observations explain the ownership change instead of treating a button click as the result.
+Run `./run-tokenization.command` and open `http://127.0.0.1:3003/myNFTs`. Use the burner wallet for speed or connect MetaMask. Mint an NFT. Open an incognito window, fund its burner address, and transfer the NFT. Verify the receiving page, `ownerOf(tokenId)`, and the `Transfer` event. These observations explain the ownership change instead of treating a button click as the result.
 
 ### 25. One-command local stack (2 min)
 

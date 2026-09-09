@@ -113,7 +113,7 @@ yarn deploy
 yarn start
 ```
 
-📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
+📱 The workshop launcher opens [http://127.0.0.1:3003](http://127.0.0.1:3003) to show the app.
 
 > _Note: the UI in screenshots may differ slightly from the current version._
 
@@ -143,7 +143,7 @@ yarn start
 
 > 🔥 We'll use burner wallets on localhost. They're disposable wallets that auto-sign transactions so you can keep building.
 
-> 👛 Explore burner wallets in 🏗 Scaffold-ETH 2: open an incognito window and visit http://localhost:3000. You'll see a totally new address in the top-right. Copy it and send test funds from your first window using the **Faucet** button (bottom-left):
+> 👛 Explore burner wallets in 🏗 Scaffold-ETH 2: open an incognito window and visit http://127.0.0.1:3003. You'll see a totally new address in the top-right. Copy it and send test funds from your first window using the **Faucet** button (bottom-left):
 
 ![icognito&webBrowser](https://github.com/user-attachments/assets/bf1cbb3e-b014-44b1-9b19-83d831abcb19)
 
@@ -163,7 +163,7 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/63dabceb-ad42-4c09-8e5d-a0139939e32d)
 
-👛 Open an incognito window and navigate to http://localhost:3000.
+👛 Open an incognito window and navigate to http://127.0.0.1:3003.
 
 🎟 Try a transfer! Send a token to the incognito window address using the UI:
 
@@ -231,7 +231,7 @@ yarn test
 
 ![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/12072395/ff03bda0-66c6-4907-a9ad-bc8587da8036)
 
-> Confirm the network badge in the UI at http://localhost:3000 shows Sepolia:
+> Confirm the network badge in the UI at http://127.0.0.1:3003 shows Sepolia:
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 

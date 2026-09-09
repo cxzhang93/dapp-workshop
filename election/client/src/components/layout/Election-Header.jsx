@@ -45,50 +45,51 @@ class ElectionHeader extends Component {
   }
 
   render() {
+    const frontend = window.location.origin;
     return (
       <div>
         <Menu>
           <Menu.Item
             header
-            href={`http://localhost:3000/Election/${this.state.contractAddress}`}
+            href={`${frontend}/Election/${this.state.contractAddress}`}
           >
             <h3>Election</h3>
           </Menu.Item>
           <Menu.Item
             //  position="right"
-            href={`http://localhost:3000/vote/${this.state.contractAddress}`}
+            href={`${frontend}/vote/${this.state.contractAddress}`}
             name="Vote"
             active={this.state.activeItem === "Vote"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
             // position="right"
-            href={`http://localhost:3000/result/${this.state.contractAddress}`}
+            href={`${frontend}/result/${this.state.contractAddress}`}
             name="Result"
             active={this.state.activeItem === "Result"}
             onClick={this.routeChange}
           />
 
           <Menu.Item
-            href={`http://localhost:3000/candidates/${this.state.contractAddress}`}
+            href={`${frontend}/candidates/${this.state.contractAddress}`}
             name="Candidates"
             active={this.state.activeItem === "Candidates"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
-            href={`http://localhost:3000/voters/${this.state.contractAddress}`}
+            href={`${frontend}/voters/${this.state.contractAddress}`}
             name="Voters"
             active={this.state.activeItem === "Voters"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
-            href={`http://localhost:3000/voterRegistration/${this.state.contractAddress}`}
+            href={`${frontend}/voterRegistration/${this.state.contractAddress}`}
             name="RegisterVoter"
             active={this.state.activeItem === "RegisterVoter"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
-            href={`http://localhost:3000/candidateRegistration/${this.state.contractAddress}`}
+            href={`${frontend}/candidateRegistration/${this.state.contractAddress}`}
             name="RegisterCandidate"
             active={this.state.activeItem === "RegisterCandidate"}
             onClick={this.handleItemClick}

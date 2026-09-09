@@ -8,7 +8,7 @@ Run:
 ./run-tokenization.command
 ```
 
-The launcher uses the bundled Yarn 4.13.0 release, starts a Hardhat chain on port 8545, deploys `YourCollectible`, and starts the official frontend on `http://127.0.0.1:3000/myNFTs`.
+The launcher uses the bundled Yarn 4.13.0 release, starts a Hardhat chain on port 8545, deploys `YourCollectible`, and starts the official frontend on `http://127.0.0.1:3003/myNFTs`.
 
 Suggested demonstration:
 

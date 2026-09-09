@@ -10,3 +10,4 @@
 .tmp/
 .playwright-cli/
 tokenization/.cache/
+~$*.pptx

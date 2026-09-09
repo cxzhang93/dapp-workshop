@@ -8,7 +8,7 @@ Run:
 ./run-election.command
 ```
 
-The launcher starts Ganache on port 8545, compiles and deploys `ElectionFactory`, starts Express on port 4000, and starts the original React app on port 3000. The factory address is written to the generated local receipt used by the server.
+The launcher starts Ganache on port 8545, compiles and deploys `ElectionFactory`, starts Express on port 4000, and starts the original React app on `http://127.0.0.1:3002`. The factory address is written to the generated local receipt used by the server.
 
 Suggested demonstration:
 

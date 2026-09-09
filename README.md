@@ -14,7 +14,15 @@ Install Node.js 24, then double-click a `.command` file on macOS or run it in Te
 ./run-tokenization.command
 ```
 
-Each launcher installs pinned dependencies on its first run, starts a fresh local chain, deploys the contract, starts every required server, and opens the original or official frontend at `http://127.0.0.1:3000`. Run one project at a time because all three use ports 3000 and 8545.
+Each launcher installs pinned dependencies on its first run, starts a fresh local chain, deploys the contract, starts every required server, and opens its fixed frontend address:
+
+| Project | Frontend URL |
+|---|---|
+| Lock | `http://127.0.0.1:3001` |
+| Election | `http://127.0.0.1:3002` |
+| Tokenization | `http://127.0.0.1:3003/myNFTs` |
+
+Run one project at a time because the local chains still share JSON-RPC port 8545. The distinct frontend ports make browser tabs and bookmarks unambiguous.
 
 | Project | Frontend and transaction path | Classroom focus |
 |---|---|---|
@@ -30,7 +38,7 @@ The Lock launcher prints the disposable development private key. In MetaMask:
 
 1. Add a network named `Localhost 8545` with RPC URL `http://127.0.0.1:8545`, chain ID `31337`, and currency symbol `ETH`.
 2. Import the printed account. It is the standard public Hardhat development key and only controls local test ETH.
-3. Open `http://127.0.0.1:3000`, connect the wallet, choose a future UTC unlock time and deploy.
+3. Open `http://127.0.0.1:3001`, connect the wallet, choose a future UTC unlock time and deploy.
 4. Confirm deployment, unlock, and withdrawal in MetaMask. The page refreshes the contract balance after each confirmed transaction.
 
 Never send real assets to the disposable development address or reuse its private key outside a local chain.
@@ -76,10 +84,10 @@ Detailed speaking cues and fallback steps are in [docs/PRESENTER-GUIDE.md](docs/
 
 | Symptom | Fix |
 |---|---|
-| Port 3000, 4000 or 8545 is occupied | Stop the other workshop launcher. The scripts do not kill unrelated processes. |
+| Port 3001, 3002, 3003, 4000 or 8545 is occupied | Stop the process using that port. The scripts do not kill unrelated processes. |
 | MetaMask shows the wrong network | Switch to chain ID 31337 and reload the Lock page. |
 | MetaMask account has no local ETH | Import the key printed by the Lock launcher. |
-| Browser does not open | Visit the printed `http://127.0.0.1:3000` URL manually. |
+| Browser does not open | Visit the project URL printed by its launcher. |
 | Dependency installation fails | Check network access, then rerun the same launcher. |
 | Ganache prints a native binding warning | Its JavaScript fallback works; use Node 24 for the supported setup. |
 | Election prints an asm.js warning | The upstream contract uses the legacy Solidity 0.4.25 compiler; the test verifies compilation and deployment. |
