@@ -65,8 +65,8 @@ open_browser() {
 print_lock_wallet() {
   echo
   echo "MetaMask local network: http://127.0.0.1:8545 (chain ID 31337)"
-  echo "Funded disposable account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-  echo "Private key to import: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+  echo "Funded disposable account: $LOCK_ACCOUNT"
+  echo "Private key to import: $LOCK_PRIVATE_KEY"
   echo "Balance on each fresh local chain: 1000 test ETH"
   echo
 }
@@ -89,8 +89,14 @@ run_lock() {
   fi
   check_port 8545
   check_port 3001
+  local mnemonic
+  mnemonic="$(cd "$ROOT" && node --input-type=module -e 'import { Wallet } from "./lock/node_modules/ethers/lib.esm/index.js"; process.stdout.write(Wallet.createRandom().mnemonic.phrase)')"
+  export LOCK_MNEMONIC="$mnemonic"
+  LOCK_ACCOUNT="$(cd "$ROOT" && node --input-type=module -e 'import { HDNodeWallet } from "./lock/node_modules/ethers/lib.esm/index.js"; process.stdout.write(HDNodeWallet.fromPhrase(process.env.LOCK_MNEMONIC).address)')"
+  LOCK_PRIVATE_KEY="$(cd "$ROOT" && node --input-type=module -e 'import { HDNodeWallet } from "./lock/node_modules/ethers/lib.esm/index.js"; process.stdout.write(HDNodeWallet.fromPhrase(process.env.LOCK_MNEMONIC).privateKey)')"
+  unset LOCK_MNEMONIC
   (cd "$ROOT/lock" && npm run prepare:artifact)
-  "$ROOT/lock/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "test test test test test test test test test test test junk" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
+  "$ROOT/lock/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "$mnemonic" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
   PIDS+=("$!")
   wait_rpc
   (cd "$ROOT/lock/webapp" && BROWSER=none GENERATE_SOURCEMAP=false HOST=127.0.0.1 PORT=3001 npm start) &

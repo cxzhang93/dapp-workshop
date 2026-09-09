@@ -8,7 +8,7 @@ Run:
 ./run-lock.command
 ```
 
-The root launcher starts Ganache on `127.0.0.1:8545`, compiles the original contract into `webapp/src/Lock.json`, and starts the original React app on `http://127.0.0.1:3001`. Configure MetaMask for chain ID 31337 and import the disposable key printed in the terminal.
+The root launcher generates a fresh Ganache mnemonic on every run, starts the chain on `127.0.0.1:8545`, compiles the original contract into `webapp/src/Lock.json`, and starts the original React app on `http://127.0.0.1:3001`. Configure MetaMask for chain ID 31337 and import the new disposable key printed after the page is ready.
 
 Suggested demonstration:
 

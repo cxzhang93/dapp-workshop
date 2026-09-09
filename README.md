@@ -34,14 +34,14 @@ The first run needs internet for dependency installation. The Tokenization page 
 
 ## Lock and MetaMask setup
 
-The Lock launcher prints the disposable development private key. In MetaMask:
+The Lock launcher generates a fresh disposable development account on every run and prints its private key after the frontend is ready. You must import the newly printed account into MetaMask after each restart. In MetaMask:
 
 1. Add a network named `Localhost 8545` with RPC URL `http://127.0.0.1:8545`, chain ID `31337`, and currency symbol `ETH`.
-2. Import the printed account. It is the standard public Hardhat development key and only controls local test ETH.
+2. Import the newly printed account. Its key is valid only for this local chain session and controls local test ETH.
 3. Open `http://127.0.0.1:3001`, connect the wallet, choose a future UTC unlock time and deploy.
 4. Confirm deployment, unlock, and withdrawal in MetaMask. The page refreshes the contract balance after each confirmed transaction.
 
-Never send real assets to the disposable development address or reuse its private key outside a local chain.
+Never send real assets to the disposable development address or reuse its private key outside this local chain session.
 
 ## Stop, reset and test
 
