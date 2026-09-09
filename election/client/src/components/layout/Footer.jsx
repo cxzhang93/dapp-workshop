@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, IconGroup, Segment, SegmentGroup } from "semantic-ui-react";
+import { Icon, Segment } from "semantic-ui-react";
 import "../../App.css";
 
 const Footer = () => {
@@ -8,6 +8,7 @@ const Footer = () => {
       Made with <Icon color="red" name="heart"></Icon> by{" "}
       <a
         target="_blank"
+        rel="noreferrer"
         style={{ color: "black" }}
         href="https://schadokar.dev"
       >
@@ -17,6 +18,7 @@ const Footer = () => {
       Please support the project at{" "}
       <a
         target="_blank"
+        rel="noreferrer"
         style={{ color: "black" }}
         href="https://github.com/schadokar/election-ethereum-react-dapp"
       >
