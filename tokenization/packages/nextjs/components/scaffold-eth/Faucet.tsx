@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Address, AddressInput, Balance, EtherInput } from "@scaffold-ui/components";
 import { Address as AddressType, createWalletClient, http, parseEther } from "viem";
-import { hardhat } from "viem/chains";
+import { localChain } from "~~/utils/scaffold-eth/localChain";
 import { useAccount } from "wagmi";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { useTargetNetwork, useTransactor } from "~~/hooks/scaffold-eth";
@@ -13,7 +13,7 @@ import { notification } from "~~/utils/scaffold-eth";
 const FAUCET_ACCOUNT_INDEX = 0;
 
 const localWalletClient = createWalletClient({
-  chain: hardhat,
+  chain: localChain,
   transport: http(),
 });
 
@@ -76,7 +76,7 @@ export const Faucet = () => {
   };
 
   // Render only on local chain
-  if (ConnectedChain?.id !== hardhat.id) {
+  if (ConnectedChain?.id !== localChain.id) {
     return null;
   }
 

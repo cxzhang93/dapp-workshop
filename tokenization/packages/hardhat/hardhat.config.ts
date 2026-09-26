@@ -66,7 +66,7 @@ export default defineConfig({
     // If the network you are looking for is not here you can add new network settings
     default: {
       type: 'http',
-      url: 'http://127.0.0.1:8545'
+      url: 'http://127.0.0.1:8547'
     },
     hardhat: {
       type: 'edr-simulated',

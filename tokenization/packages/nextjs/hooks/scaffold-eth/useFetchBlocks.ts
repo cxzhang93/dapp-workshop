@@ -10,16 +10,16 @@ import {
   walletActions,
   webSocket,
 } from "viem";
-import { hardhat } from "viem/chains";
+import { localChain } from "~~/utils/scaffold-eth/localChain";
 import { decodeTransactionData } from "~~/utils/scaffold-eth";
 
 const TRANSACTIONS_PER_PAGE = 20;
 const BLOCK_BATCH_SIZE = 50;
 
 export const testClient = createTestClient({
-  chain: hardhat,
+  chain: localChain,
   mode: "hardhat",
-  transport: webSocket("ws://127.0.0.1:8545"),
+  transport: webSocket(localChain.rpcUrls.default.webSocket[0]),
 })
   .extend(publicActions)
   .extend(walletActions);

@@ -33,18 +33,19 @@ yarn_bin() {
 }
 
 wait_rpc() {
+  local url="$1"
   for ((i=0; i<90; i++)); do
-    if node -e 'fetch("http://127.0.0.1:8545",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_chainId",params:[]})}).then(r=>r.json()).then(v=>process.exit(v.result?0:1)).catch(()=>process.exit(1))'; then return 0; fi
+    if node -e 'fetch(process.argv[1],{signal:AbortSignal.timeout(2000),method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_chainId",params:[]})}).then(r=>r.json()).then(v=>process.exit(v.result==="0x7a69"?0:1)).catch(()=>process.exit(1))' "$url"; then return 0; fi
     sleep 1
   done
-  echo "Local chain did not become ready." >&2
+  echo "$url did not become ready." >&2
   return 1
 }
 
 wait_url() {
   local url="$1"
   for ((i=0; i<120; i++)); do
-    if node -e 'fetch(process.argv[1]).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))' "$url"; then return 0; fi
+    if node -e 'fetch(process.argv[1],{signal:AbortSignal.timeout(5000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))' "$url"; then return 0; fi
     sleep 1
   done
   echo "$url did not become ready." >&2
@@ -69,6 +70,11 @@ print_lock_wallet() {
   echo "Private key to import: $LOCK_PRIVATE_KEY"
   echo "Balance on each fresh local chain: 1000 test ETH"
   echo
+}
+
+start_service() {
+  node "$ROOT/scripts/run-service.mjs" "$@" &
+  PIDS+=("$!")
 }
 
 PIDS=()
@@ -96,41 +102,38 @@ run_lock() {
   LOCK_PRIVATE_KEY="$(cd "$ROOT" && node --input-type=module -e 'import { HDNodeWallet } from "./lock/node_modules/ethers/lib.esm/index.js"; process.stdout.write(HDNodeWallet.fromPhrase(process.env.LOCK_MNEMONIC).privateKey)')"
   unset LOCK_MNEMONIC
   (cd "$ROOT/lock" && npm run prepare:artifact)
-  "$ROOT/lock/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "$mnemonic" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
-  PIDS+=("$!")
-  wait_rpc
-  (cd "$ROOT/lock/webapp" && BROWSER=none GENERATE_SOURCEMAP=false HOST=127.0.0.1 PORT=3001 npm start) &
-  PIDS+=("$!")
+  start_service "$ROOT/lock" "$ROOT/lock/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "$mnemonic" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet
+  wait_rpc http://127.0.0.1:8545
+  BROWSER=none GENERATE_SOURCEMAP=false HOST=127.0.0.1 PORT=3001 start_service "$ROOT/lock/webapp" npm start
   wait_url http://127.0.0.1:3001
   echo "Lock dApp ready: http://127.0.0.1:3001"
   print_lock_wallet
   open_browser http://127.0.0.1:3001
-  wait "$!"
+  wait "${PIDS[${#PIDS[@]}-1]}"
 }
 
 run_election() {
+  # Keep deployment and the API on this launcher's chain, even with an inherited RPC_URL.
+  export RPC_URL=http://127.0.0.1:8546
   npm_install_if_needed "$ROOT/election"
   npm_install_if_needed "$ROOT/election/client"
   if [[ "$MODE" == --test ]]; then
     (cd "$ROOT/election" && npm test && npm run build)
     return
   fi
-  check_port 8545
+  check_port 8546
   check_port 4000
   check_port 3002
-  "$ROOT/election/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8545 --chain.chainId 31337 --wallet.mnemonic "test test test test test test test test test test test junk" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet &
-  PIDS+=("$!")
-  wait_rpc
+  start_service "$ROOT/election" "$ROOT/election/node_modules/.bin/ganache" --server.host 127.0.0.1 --server.port 8546 --chain.chainId 31337 --wallet.mnemonic "test test test test test test test test test test test junk" --wallet.totalAccounts 10 --wallet.defaultBalance 1000 --logging.quiet
+  wait_rpc "$RPC_URL"
   (cd "$ROOT/election" && npm run deploy)
-  (cd "$ROOT/election" && PORT=4000 npm start) &
-  PIDS+=("$!")
+  PORT=4000 start_service "$ROOT/election" npm start
   wait_url http://127.0.0.1:4000/health
-  (cd "$ROOT/election/client" && BROWSER=none HOST=127.0.0.1 PORT=3002 npm start) &
-  PIDS+=("$!")
+  BROWSER=none HOST=127.0.0.1 PORT=3002 start_service "$ROOT/election/client" npm start
   wait_url http://127.0.0.1:3002
   echo "Election dApp ready: http://127.0.0.1:3002"
   open_browser http://127.0.0.1:3002
-  wait "$!"
+  wait "${PIDS[${#PIDS[@]}-1]}"
 }
 
 run_tokenization() {
@@ -146,18 +149,17 @@ run_tokenization() {
     (cd "$ROOT/tokenization" && yarn_bin test && yarn_bin next:check-types)
     return
   fi
-  check_port 8545
+  check_port 8547
   check_port 3003
-  (cd "$ROOT/tokenization" && yarn_bin chain) &
-  PIDS+=("$!")
-  wait_rpc
+  HARDHAT_WORKSHOP_CACHE="$ROOT/tokenization/.cache/hardhat-nodejs" start_service "$ROOT/tokenization" node "$ROOT/tokenization/.yarn/releases/yarn-4.13.0.cjs" chain
+  wait_rpc http://127.0.0.1:8547
   (cd "$ROOT/tokenization" && yarn_bin deploy)
-  (cd "$ROOT/tokenization" && export PORT=3003 && yarn_bin start) &
-  PIDS+=("$!")
+  PORT=3003 start_service "$ROOT/tokenization" node "$ROOT/tokenization/.yarn/releases/yarn-4.13.0.cjs" start
   wait_url http://127.0.0.1:3003
+  echo "Tokenization RPC: http://127.0.0.1:8547 (chain ID 31337); use burner wallet alongside Lock."
   echo "Scaffold-ETH Tokenization ready: http://127.0.0.1:3003/myNFTs"
   open_browser http://127.0.0.1:3003/myNFTs
-  wait "$!"
+  wait "${PIDS[${#PIDS[@]}-1]}"
 }
 
 case "$PROJECT" in

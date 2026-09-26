@@ -9,6 +9,7 @@
 Workshop-only adjustments:
 
 - Added the root one-command launcher integration.
+- Isolated local HTTP/WebSocket RPC on 8547 for Hardhat, deployment, wallet defaults, faucets and block explorer, retaining Scaffold-ETH chain ID 31337.
 - Added `127.0.0.1` to the Next.js development origins used by the launcher.
 - Added explicit TypeScript casts for `tokenId` and `tokenURI` in `MyHoldings.tsx` to satisfy the generated dependency versions.
 - Added an optional launcher-only Hardhat cache path so the complete local stack writes inside the project directory.

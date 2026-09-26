@@ -8,7 +8,7 @@ Run:
 ./run-election.command
 ```
 
-The launcher starts Ganache on port 8545, compiles and deploys `ElectionFactory`, starts Express on port 4000, and starts the original React app on `http://127.0.0.1:3002`. The factory address is written to the generated local receipt used by the server.
+The launcher starts Ganache on port 8546, compiles and deploys `ElectionFactory`, starts Express on port 4000, and starts the original React app on `http://127.0.0.1:3002`. The factory address is written to the generated local receipt used by the server.
 
 Suggested demonstration:
 
@@ -21,3 +21,7 @@ Suggested demonstration:
 This project is useful because it makes the backend visible. It also carries a major trust assumption: the server selects the sender and signs. The legacy contract stores election information publicly and does not implement secret ballots or a production identity system.
 
 Run `./run-election.command --test` for factory deployment, election creation, list verification, and a production React build. The original source documentation remains at `election/readme.md` and `election/client/README.md`.
+
+This demo can run alongside the others. See the root [port table and MetaMask compatibility notes](../README.md#tokenization-wallets-and-the-shared-chain-id-limitation).
+
+Manual deployment and server startup default to `http://127.0.0.1:8546`. `RPC_URL` still overrides that default when running `npm run deploy` / `npm start` directly. The launcher explicitly pins both to its own 8546 chain, ignoring an inherited `RPC_URL`.

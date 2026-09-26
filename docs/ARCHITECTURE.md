@@ -9,7 +9,7 @@ Original React frontend, port 3001
         ↓ EIP-1193 request
 MetaMask browser wallet
         ↓ signed transaction
-Ganache JSON-RPC, chain ID 31337
+Ganache JSON-RPC, port 8545, chain ID 31337
         ↓ EVM call
 Lock.sol
 ```
@@ -25,7 +25,7 @@ Original React frontend, port 3002
         ↓ HTTP JSON
 Original Express backend
         ↓ Web3 call signed by a Ganache account
-Ganache JSON-RPC, chain ID 31337
+Ganache JSON-RPC, port 8546, chain ID 31337
         ↓ EVM call
 ElectionFactory and Election contracts
 ```
@@ -41,7 +41,7 @@ Official Scaffold-ETH 2 Next.js frontend, port 3003
         ↓ wagmi and Scaffold hooks
 Burner wallet or MetaMask through RainbowKit
         ↓ signed transaction
-Hardhat local JSON-RPC, chain ID 31337
+Hardhat local JSON-RPC, HTTP/WS port 8547, chain ID 31337
         ↓ EVM call and events
 OpenZeppelin ERC-721 contract
         ↓ tokenURI
@@ -63,3 +63,5 @@ The root scripts deploy only to disposable local chains. For a public deployment
 5. Publish source verification, security review information, and user-facing network requirements.
 
 Election additionally needs an intentional backend deployment and key-management design because its server signs transactions.
+
+The launchers isolate all listening ports and supervise their own process groups, so stopping one demo leaves the others running. Chain IDs remain 31337 for Scaffold-ETH compatibility; see the [MetaMask limitation](../README.md#tokenization-wallets-and-the-shared-chain-id-limitation) before using one extension with both wallet-based demos.

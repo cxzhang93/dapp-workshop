@@ -1,4 +1,5 @@
 import * as chains from "viem/chains";
+import { localChain } from "./utils/scaffold-eth/localChain";
 
 
 
@@ -18,7 +19,7 @@ export const DEFAULT_ALCHEMY_API_KEY = "IZYEU2cWBgnFmgiTAgpWD";
 const scaffoldConfig = {
   // The networks on which your DApp is live
   targetNetworks: [
-    chains.hardhat
+    localChain
   ],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 3000,

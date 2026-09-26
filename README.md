@@ -14,13 +14,13 @@ Install Node.js 24, then double-click a `.command` file on macOS or run it in Te
 
 Each launcher installs pinned dependencies on its first run, starts a fresh local chain, deploys the contract, starts every required server, and opens its fixed frontend address:
 
-| Project | Frontend URL |
-|---|---|
-| Lock | `http://127.0.0.1:3001` |
-| Election | `http://127.0.0.1:3002` |
-| Tokenization | `http://127.0.0.1:3003/myNFTs` |
+| Project | Frontend URL | JSON-RPC URL | Chain ID | Other ports |
+|---|---|---|---|---|
+| Lock | `http://127.0.0.1:3001` | `http://127.0.0.1:8545` | 31337 | — |
+| Election | `http://127.0.0.1:3002` | `http://127.0.0.1:8546` | 31337 | Express 4000 |
+| Tokenization | `http://127.0.0.1:3003/myNFTs` | `http://127.0.0.1:8547` | 31337 | WebSocket also 8547 |
 
-Run one project at a time because the local chains still share JSON-RPC port 8545. The distinct frontend ports make browser tabs and bookmarks unambiguous.
+All three demos can run simultaneously: run each command in its own terminal (or double-click all three launchers). Starting only one demo uses exactly the same command, ports and workflow. Ctrl+C stops only that launcher's services; the other demos keep running. Each demo has independent balances, contracts and chain state, even though their chain IDs are the same. Election and Tokenization reuse standard development keys, so identical addresses do not imply shared state.
 
 | Project | Frontend and transaction path | Classroom focus |
 |---|---|---|
@@ -41,6 +41,16 @@ The Lock launcher generates a fresh disposable development account on every run 
 
 Never send real assets to the disposable development address or reuse its private key outside this local chain session.
 
+## Tokenization wallets and the shared chain-ID limitation
+
+Use Lock with MetaMask on `http://127.0.0.1:8545` and Tokenization with its local burner wallet on `http://127.0.0.1:8547` when demonstrating them together. Election signs on the server and needs no MetaMask configuration.
+
+For Tokenization alone, MetaMask must use RPC URL `http://127.0.0.1:8547`, chain ID `31337`, currency `ETH` (name it `Tokenization Local`). Fund that account using the Tokenization faucet. Its HTTP clients, faucet, burner wallet and block explorer all use 8547.
+
+**Compatibility limit:** these independent chains retain ID 31337 to preserve Lock's existing saved MetaMask network and Scaffold-ETH's local-only burner wallet, faucet, explorer and generated deployment lookup. Unique chain IDs are possible, but require a separate network-configuration migration (including existing wallet settings); this change deliberately preserves those IDs. Wallet switching uses the chain ID ([EIP-3326](https://eips.ethereum.org/EIPS/eip-3326)), so `wallet_switchEthereumChain` cannot distinguish Lock from Tokenization or correct an already-saved RPC endpoint with the same ID. A successful network switch does not prove the wallet is on the correct demo. Do not assume two differently named MetaMask networks solve this.
+
+To use MetaMask with both demos, use separate browser profiles with separately configured extensions, or manually change the saved 31337 RPC URL when switching demos and reload the page. Verify the URL before approving transactions. If a fresh chain or endpoint switch leaves stale nonces, clear MetaMask activity/nonce data for the disposable local account. The launcher cannot safely rewrite extension settings or isolate one shared MetaMask connection across tabs. Existing Lock setup at 8545 is unchanged; existing Tokenization settings must move from 8545 to 8547.
+
 ## Stop, reset and test
 
 Press Ctrl+C in the launcher terminal to stop its frontend, backend, and chain. Restarting creates a clean local chain.
@@ -49,7 +59,8 @@ Press Ctrl+C in the launcher terminal to stop its frontend, backend, and chain. 
 ./run-lock.command --no-open       # start without opening a browser
 ./run-election.command --test      # contract test and frontend build
 ./run-tokenization.command --test  # official contract tests and TypeScript check
-./test-all.sh                      # verify all three projects
+./test-all.sh                      # unit/config checks and all three project checks
+node --test test/concurrent.test.mjs # live concurrent/standalone launch and isolation checks
 ```
 
 The scripts require Node 22 or newer; Node 24 is the supported classroom and CI version. Native Windows users can run them in WSL.
@@ -74,8 +85,8 @@ The workshop-specific changes focus on reproducible local startup and compatibil
 
 | Symptom | Fix |
 |---|---|
-| Port 3001, 3002, 3003, 4000 or 8545 is occupied | Stop the process using that port. The scripts do not kill unrelated processes. |
-| MetaMask shows the wrong network | Switch to chain ID 31337 and reload the Lock page. |
+| Port 3001, 3002, 3003, 4000, 8545, 8546 or 8547 is occupied | Stop the process using that port. The scripts do not kill unrelated processes. |
+| MetaMask shows the wrong network | Check the RPC URL, not just chain ID 31337: Lock 8545, Tokenization 8547. See the shared chain-ID limitation above. |
 | MetaMask account has no local ETH | Import the key printed by the Lock launcher. |
 | Browser does not open | Visit the project URL printed by its launcher. |
 | Dependency installation fails | Check network access, then rerun the same launcher. |

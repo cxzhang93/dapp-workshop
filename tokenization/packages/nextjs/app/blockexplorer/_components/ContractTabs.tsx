@@ -7,7 +7,7 @@ import { AddressStorageTab } from "./AddressStorageTab";
 import { PaginationButton } from "./PaginationButton";
 import { TransactionsTable } from "./TransactionsTable";
 import { Address, createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
+import { localChain } from "~~/utils/scaffold-eth/localChain";
 import { useFetchBlocks } from "~~/hooks/scaffold-eth";
 
 type AddressCodeTabProps = {
@@ -21,7 +21,7 @@ type PageProps = {
 };
 
 const publicClient = createPublicClient({
-  chain: hardhat,
+  chain: localChain,
   transport: http(),
 });
 

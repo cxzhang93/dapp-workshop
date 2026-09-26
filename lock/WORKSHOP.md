@@ -21,3 +21,5 @@ Suggested demonstration:
 Run `./run-lock.command --test` for a deployment, unlock, withdrawal test and a production React build.
 
 Workshop compatibility changes are limited to dependency pins, local compilation, EIP-1193 network switching, exact timestamp/wei handling, receipt waits, readable errors, and state refresh. The original source README remains at `lock/README.md`.
+
+Lock keeps RPC port 8545 and chain ID 31337. Run Election and Tokenization in other terminals; use Tokenization’s burner wallet or a separate MetaMask browser profile. See the [shared chain-ID limitation](../README.md#tokenization-wallets-and-the-shared-chain-id-limitation).

@@ -1,3 +1,5 @@
+> Workshop local runtime: `yarn chain` / `yarn deploy` and all frontend RPC clients use **127.0.0.1:8547** (chain ID 31337). Use a burner wallet alongside Lock, or a separately configured MetaMask profile. See [workshop notes](WORKSHOP.md) and [wallet compatibility](../README.md#tokenization-wallets-and-the-shared-chain-id-limitation).
+
 # 🏗 Scaffold-ETH 2
 
 <h4 align="center">

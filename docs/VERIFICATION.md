@@ -1,6 +1,6 @@
 # Changes and verification
 
-Verified locally on 2026-09-09 on macOS arm64. The supported classroom and CI runtime is Node 24; the local checks also passed with Node 26.0.0.
+The original workshop was verified locally on 2026-09-09 on macOS arm64. The supported classroom and CI runtime is Node 24; the local checks also passed with Node 26.0.0.
 
 ## Automated checks
 
@@ -10,7 +10,25 @@ Verified locally on 2026-09-09 on macOS arm64. The supported classroom and CI ru
 | Election | Solidity 0.4.25 factory compiled and deployed; election creation and factory listing passed; original React production build completed. |
 | Tokenization | Official Hardhat deployment, minting and enumeration tests passed; Next.js TypeScript check passed. |
 
-Run all checks with `./test-all.sh`. GitHub Actions runs the same three jobs independently on Ubuntu and Node 24.
+Run all checks with `./test-all.sh`. GitHub Actions runs the three project jobs plus a concurrent-runtime job on Ubuntu and Node 24.
+
+## RPC isolation regression checks
+
+Verified on 2026-09-26 on macOS arm64 / Node 24.19.0: `./test-all.sh` passed (three runtime regressions, both Ganache contract tests and React builds, three Hardhat tests and Next.js TypeScript checking). `node --test test/concurrent.test.mjs` passed in approximately 65 seconds, including concurrent startup, transaction isolation, HTTP/WS routing, shutdown and all three standalone restarts.
+
+`./test-all.sh` now also runs `test/runtime.test.mjs`: RPC configuration consistency and service-supervisor exit/descendant cleanup checks.
+
+After dependencies are installed, run `node --test test/concurrent.test.mjs` with ports 3001–3003, 4000 and 8545–8547 free. It launches the real services with `--no-open` and checks:
+
+- All three frontends and chains respond concurrently at their assigned ports.
+- Transactions affect only the intended chain; the Election API creates an election on 8546 even when the caller exports a stale `RPC_URL` pointing to 8545.
+- Tokenization's shared chain configuration routes default HTTP wallet/faucet and WebSocket explorer requests to 8547.
+- A duplicate launcher refuses an occupied RPC port without killing the running demo.
+- Stopping Tokenization releases its ports while Lock and Election continue, and its default RPC transport fails instead of reading Lock's chain.
+- SIGINT stops Lock without affecting Election; all ports are released on shutdown.
+- Each demo then starts and stops alone, and Lock generates a new account on restart.
+
+Integration logs are written under `.tmp/` and uploaded by the concurrent-runtime CI job on failure. Do not run this test concurrently with contract tests that rewrite deployment artifacts/receipts in the same checkout. The actual MetaMask extension still needs manual confirmation; this suite tests RPC isolation and service lifecycle, not extension popup behavior. See the [shared chain-ID limitation](../README.md#tokenization-wallets-and-the-shared-chain-id-limitation).
 
 ## One-command runtime and browser checks
 

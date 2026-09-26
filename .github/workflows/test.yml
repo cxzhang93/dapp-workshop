@@ -53,3 +53,20 @@ jobs:
         working-directory: tokenization
       - run: node .yarn/releases/yarn-4.13.0.cjs next:check-types
         working-directory: tokenization
+
+  concurrent-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: ./test-all.sh
+      - run: node --test test/concurrent.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: concurrent-runtime-logs
+          path: .tmp/*-integration.log
+          include-hidden-files: true
